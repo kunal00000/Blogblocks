@@ -4,8 +4,13 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { BlogBlock } from "@/types/blog";
-import { Loader2Icon, SendIcon, GripVerticalIcon } from "lucide-react";
-import { memo, useCallback, useMemo, useState } from "react";
+import {
+  Loader2Icon,
+  SendIcon,
+  GripVerticalIcon,
+  Trash2Icon,
+} from "lucide-react";
+import { useCallback, useMemo, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useDroppable } from "@dnd-kit/core";
 import {
@@ -13,18 +18,26 @@ import {
   useSortable,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import { animateLayoutChanges } from "@/lib/helpers";
 
 interface EditorProps {
   className?: string;
   url: string;
   content: string;
   selectedBlocks: BlogBlock[];
-  setSelectedBlocks: (blocks: BlogBlock[]) => void;
+  setSelectedBlocks: React.Dispatch<React.SetStateAction<BlogBlock[]>>;
   onUrlChange: (url: string) => void;
   onContentChange: (content: string) => void;
 }
 
-function BlockItem({ block }: { block: BlogBlock }) {
+function BlockItem({
+  block,
+  onRemove,
+}: {
+  block: BlogBlock;
+  onRemove: (id: string) => void;
+}) {
   const {
     attributes,
     listeners,
@@ -34,13 +47,12 @@ function BlockItem({ block }: { block: BlogBlock }) {
     isDragging,
   } = useSortable({
     id: block.id,
+    animateLayoutChanges,
   });
 
   const style = useMemo(
     () => ({
-      transform: transform
-        ? `translate3d(${transform.x}px, ${transform.y}px, 0)`
-        : undefined,
+      transform: CSS.Translate.toString(transform),
       transition,
       opacity: isDragging ? 0.5 : 1,
       zIndex: isDragging ? 999 : 1,
@@ -50,19 +62,30 @@ function BlockItem({ block }: { block: BlogBlock }) {
 
   return (
     <div
-      ref={setNodeRef}
       style={style}
       className={cn(
-        "flex items-center gap-2 p-3 bg-white border rounded-lg shadow-sm",
+        "flex items-center gap-2 p-3 group bg-white border rounded-lg shadow-sm",
         block.color,
         isDragging && "shadow-lg"
       )}
-      {...attributes}
-      {...listeners}
     >
-      <GripVerticalIcon className="h-4 w-4 text-gray-400" />
-      <block.icon className="h-4 w-4" />
-      <span>{block.name}</span>
+      <div
+        ref={setNodeRef}
+        className="flex items-center gap-2 cursor-move"
+        {...attributes}
+        {...listeners}
+      >
+        <GripVerticalIcon className="h-4 w-4 text-gray-400" />
+        <block.icon className="h-4 w-4" />
+        <span>{block.name}</span>
+      </div>
+
+      <span
+        onClick={() => onRemove(block.id)}
+        className="p-1.5 ml-auto rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-500 hover:bg-red-500/10"
+      >
+        <Trash2Icon className="h-5 w-5 text-red-500 cursor-pointer" />
+      </span>
     </div>
   );
 }
@@ -109,7 +132,7 @@ export function Editor({
   }, [onContentChange, selectedBlocks.length, toast, url]);
 
   return (
-    <div className={cn("p-6 space-y-6", className)}>
+    <div className={cn("p-6 space-y-6 overflow-y-scroll pb-12", className)}>
       <div className="max-w-2xl mx-auto space-y-4">
         <h1 className="text-3xl font-bold tracking-tight">AI Blog Generator</h1>
         <p className="text-muted-foreground">
@@ -130,7 +153,8 @@ export function Editor({
             "min-h-[200px] p-4 border-2 border-dashed rounded-lg transition-colors",
             isOver
               ? "border-primary bg-primary/10"
-              : "border-gray-200 bg-gray-50"
+              : "border-gray-200 bg-gray-50",
+            selectedBlocks.length > 0 && "pb-20"
           )}
         >
           <SortableContext
@@ -139,12 +163,20 @@ export function Editor({
           >
             <div className="space-y-2">
               {selectedBlocks.map((block) => (
-                <BlockItem key={block.id} block={block} />
+                <BlockItem
+                  key={block.id}
+                  block={block}
+                  onRemove={(blockId: string) => {
+                    setSelectedBlocks((prev: BlogBlock[]) =>
+                      prev.filter((block: BlogBlock) => block.id !== blockId)
+                    );
+                  }}
+                />
               ))}
             </div>
           </SortableContext>
           {selectedBlocks.length === 0 && (
-            <p className="text-center text-gray-500 py-8">
+            <p className="text-center text-gray-500 py-20">
               Drag blocks here to organize your article structure
             </p>
           )}

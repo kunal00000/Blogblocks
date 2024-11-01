@@ -13,6 +13,7 @@ import {
 import { arrayMove } from "@dnd-kit/sortable";
 import { createPortal } from "react-dom";
 import { restrictToWindowEdges } from "@dnd-kit/modifiers";
+import { MEASURING_CONFIG } from "@/lib/helpers";
 
 export default function Home() {
   // State management with TypeScript
@@ -76,28 +77,22 @@ export default function Home() {
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
       modifiers={modifiers}
+      measuring={MEASURING_CONFIG}
     >
       <div className="flex h-screen bg-background">
         <BlockSidebar
           selectedBlock={selectedBlock}
-          onBlockSelect={(block: BlogBlock | null) => {
-            setSelectedBlock(block);
-          }}
+          onBlockSelect={setSelectedBlock}
+          setSelectedBlocks={setSelectedBlocks}
           className="w-80 border-r"
         />
         <Editor
           url={url}
           content={content}
           selectedBlocks={selectedBlocks}
-          setSelectedBlocks={(blocks: BlogBlock[]) => {
-            setSelectedBlocks(blocks);
-          }}
-          onUrlChange={(newUrl: string) => {
-            setUrl(newUrl);
-          }}
-          onContentChange={(newContent: string) => {
-            setContent(newContent);
-          }}
+          setSelectedBlocks={setSelectedBlocks}
+          onUrlChange={setUrl}
+          onContentChange={setContent}
           className="flex-1"
         />
       </div>
