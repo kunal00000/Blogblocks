@@ -56,7 +56,7 @@ export function BlockSidebar({
   onBlockSelect,
 }: BlockSidebarProps) {
   return (
-    <div className={cn('flex flex-col overflow-hidden', className)}>
+    <div className={cn('flex flex-col', className)}>
       <div className="px-4 py-3 border-b">
         <h2 className="flex items-center text-lg font-semibold">
           <LayoutTemplateIcon className="mr-2 h-5 w-5" />
