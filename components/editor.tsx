@@ -1,14 +1,18 @@
-'use client';
+"use client";
 
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { BlogBlock } from '@/types/blog';
-import { Loader2Icon, SendIcon, GripVerticalIcon } from 'lucide-react';
-import { memo, useCallback, useMemo, useState } from 'react';
-import { useToast } from '@/hooks/use-toast';
-import { useDroppable } from '@dnd-kit/core';
-import { SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { BlogBlock } from "@/types/blog";
+import { Loader2Icon, SendIcon, GripVerticalIcon } from "lucide-react";
+import { memo, useCallback, useMemo, useState } from "react";
+import { useToast } from "@/hooks/use-toast";
+import { useDroppable } from "@dnd-kit/core";
+import {
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 
 interface EditorProps {
   className?: string;
@@ -20,7 +24,7 @@ interface EditorProps {
   onContentChange: (content: string) => void;
 }
 
-const BlockItem = ({ block }: { block: BlogBlock }) => {
+function BlockItem({ block }: { block: BlogBlock }) {
   const {
     attributes,
     listeners,
@@ -32,23 +36,26 @@ const BlockItem = ({ block }: { block: BlogBlock }) => {
     id: block.id,
   });
 
-  const style = useMemo(()=>({
-    transform: transform
-      ? `translate3d(${transform.x}px, ${transform.y}px, 0)`
-      : undefined,
-    transition,
-    opacity: isDragging ? 0.5 : 1,
-    zIndex: isDragging ? 999 : 1,
-  }),[])
+  const style = useMemo(
+    () => ({
+      transform: transform
+        ? `translate3d(${transform.x}px, ${transform.y}px, 0)`
+        : undefined,
+      transition,
+      opacity: isDragging ? 0.5 : 1,
+      zIndex: isDragging ? 999 : 1,
+    }),
+    [isDragging, transform, transition]
+  );
 
   return (
     <div
       ref={setNodeRef}
       style={style}
       className={cn(
-        'flex items-center gap-2 p-3 bg-white border rounded-lg shadow-sm',
+        "flex items-center gap-2 p-3 bg-white border rounded-lg shadow-sm",
         block.color,
-        isDragging && 'shadow-lg'
+        isDragging && "shadow-lg"
       )}
       {...attributes}
       {...listeners}
@@ -60,7 +67,7 @@ const BlockItem = ({ block }: { block: BlogBlock }) => {
   );
 }
 
-export const Editor = ({
+export function Editor({
   className,
   url,
   content,
@@ -68,28 +75,28 @@ export const Editor = ({
   setSelectedBlocks,
   onUrlChange,
   onContentChange,
-}: EditorProps) => {
+}: EditorProps) {
   const [isGenerating, setIsGenerating] = useState(false);
   const { toast } = useToast();
   const { setNodeRef, isOver } = useDroppable({
-    id: 'editor-dropzone',
+    id: "editor-dropzone",
   });
 
   const handleGenerate = useCallback(async () => {
     if (!url) {
       toast({
-        title: 'Input required',
-        description: 'Please provide a URL or keywords',
-        variant: 'destructive',
+        title: "Input required",
+        description: "Please provide a URL or keywords",
+        variant: "destructive",
       });
       return;
     }
 
     if (selectedBlocks.length === 0) {
       toast({
-        title: 'Blocks required',
-        description: 'Please select at least one block',
-        variant: 'destructive',
+        title: "Blocks required",
+        description: "Please select at least one block",
+        variant: "destructive",
       });
       return;
     }
@@ -97,14 +104,14 @@ export const Editor = ({
     setIsGenerating(true);
     // TODO: Implement AI generation
     await new Promise((resolve) => setTimeout(resolve, 2000));
-    onContentChange('Generated content will appear here...');
+    onContentChange("Generated content will appear here...");
     setIsGenerating(false);
-  }, [])
+  }, [onContentChange, selectedBlocks.length, toast, url]);
 
   return (
-    <div className={cn('p-6 space-y-6', className)}>
+    <div className={cn("p-6 space-y-6", className)}>
       <div className="max-w-2xl mx-auto space-y-4">
-      <h1 className="text-3xl font-bold tracking-tight">AI Blog Generator</h1>
+        <h1 className="text-3xl font-bold tracking-tight">AI Blog Generator</h1>
         <p className="text-muted-foreground">
           Enter a URL or keywords, then drag blocks to organize your article
           structure
@@ -120,8 +127,10 @@ export const Editor = ({
         <div
           ref={setNodeRef}
           className={cn(
-            'min-h-[200px] p-4 border-2 border-dashed rounded-lg transition-colors',
-            isOver ? 'border-primary bg-primary/10' : 'border-gray-200 bg-gray-50'
+            "min-h-[200px] p-4 border-2 border-dashed rounded-lg transition-colors",
+            isOver
+              ? "border-primary bg-primary/10"
+              : "border-gray-200 bg-gray-50"
           )}
         >
           <SortableContext
@@ -140,7 +149,7 @@ export const Editor = ({
             </p>
           )}
         </div>
-        
+
         <Button
           onClick={handleGenerate}
           disabled={isGenerating}
