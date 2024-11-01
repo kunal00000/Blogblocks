@@ -5,15 +5,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { BlogBlock } from '@/types/blog';
 import { Loader2Icon, SendIcon, GripVerticalIcon } from 'lucide-react';
-import { useState } from 'react';
+import { memo, useCallback, useMemo, useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useDroppable } from '@dnd-kit/core';
-import {
-  SortableContext,
-  useSortable,
-  verticalListSortingStrategy,
-  arrayMove,
-} from '@dnd-kit/sortable';
+import { SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
 
 interface EditorProps {
   className?: string;
@@ -25,7 +20,7 @@ interface EditorProps {
   onContentChange: (content: string) => void;
 }
 
-function BlockItem({ block }: { block: BlogBlock }) {
+const BlockItem = ({ block }: { block: BlogBlock }) => {
   const {
     attributes,
     listeners,
@@ -37,21 +32,23 @@ function BlockItem({ block }: { block: BlogBlock }) {
     id: block.id,
   });
 
-  const style = {
+  const style = useMemo(()=>({
     transform: transform
       ? `translate3d(${transform.x}px, ${transform.y}px, 0)`
       : undefined,
     transition,
     opacity: isDragging ? 0.5 : 1,
-  };
+    zIndex: isDragging ? 999 : 1,
+  }),[])
 
   return (
     <div
       ref={setNodeRef}
       style={style}
       className={cn(
-        'flex items-center gap-2 p-3 bg-white border rounded-lg shadow-sm z-50',
-        block.color
+        'flex items-center gap-2 p-3 bg-white border rounded-lg shadow-sm',
+        block.color,
+        isDragging && 'shadow-lg'
       )}
       {...attributes}
       {...listeners}
@@ -63,7 +60,7 @@ function BlockItem({ block }: { block: BlogBlock }) {
   );
 }
 
-export function Editor({
+export const Editor = ({
   className,
   url,
   content,
@@ -71,14 +68,14 @@ export function Editor({
   setSelectedBlocks,
   onUrlChange,
   onContentChange,
-}: EditorProps) {
+}: EditorProps) => {
   const [isGenerating, setIsGenerating] = useState(false);
   const { toast } = useToast();
-  const { setNodeRef } = useDroppable({
+  const { setNodeRef, isOver } = useDroppable({
     id: 'editor-dropzone',
   });
 
-  const handleGenerate = async () => {
+  const handleGenerate = useCallback(async () => {
     if (!url) {
       toast({
         title: 'Input required',
@@ -102,12 +99,12 @@ export function Editor({
     await new Promise((resolve) => setTimeout(resolve, 2000));
     onContentChange('Generated content will appear here...');
     setIsGenerating(false);
-  };
+  }, [])
 
   return (
     <div className={cn('p-6 space-y-6', className)}>
       <div className="max-w-2xl mx-auto space-y-4">
-        <h1 className="text-3xl font-bold tracking-tight">AI Blog Generator</h1>
+      <h1 className="text-3xl font-bold tracking-tight">AI Blog Generator</h1>
         <p className="text-muted-foreground">
           Enter a URL or keywords, then drag blocks to organize your article
           structure
@@ -122,7 +119,10 @@ export function Editor({
 
         <div
           ref={setNodeRef}
-          className="min-h-[200px] p-4 border-2 border-dashed rounded-lg bg-gray-50"
+          className={cn(
+            'min-h-[200px] p-4 border-2 border-dashed rounded-lg transition-colors',
+            isOver ? 'border-primary bg-primary/10' : 'border-gray-200 bg-gray-50'
+          )}
         >
           <SortableContext
             items={selectedBlocks}
@@ -140,7 +140,7 @@ export function Editor({
             </p>
           )}
         </div>
-
+        
         <Button
           onClick={handleGenerate}
           disabled={isGenerating}
