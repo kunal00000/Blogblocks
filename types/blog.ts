@@ -14,14 +14,14 @@ import {
   CheckCircle,
 } from "lucide-react";
 
-export interface BlogTemplate {
+export interface BlogBlock {
   id: string;
   name: string;
   icon: any;
   color: string;
 }
 
-export const templates: BlogTemplate[] = [
+export const blocks: BlogBlock[] = [
   {
     id: "hook",
     name: "Hook",

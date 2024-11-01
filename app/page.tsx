@@ -3,17 +3,17 @@
 import { useState } from 'react';
 import { Layout } from '@/components/layout';
 import { Editor } from '@/components/editor';
-import { TemplateSidebar } from '@/components/template-sidebar';
-import { BlogTemplate, templates } from '@/types/blog';
+import { BlockSidebar } from '@/components/block-sidebar';
+import { BlogBlock, blocks } from '@/types/blog';
 import { DndContext, DragEndEvent, DragOverlay } from '@dnd-kit/core';
 
 export default function Home() {
-  const [selectedTemplate, setSelectedTemplate] = useState<BlogTemplate | null>(
+  const [selectedBlock, setSelectedBlock] = useState<BlogBlock | null>(
     null
   );
   const [content, setContent] = useState('');
   const [url, setUrl] = useState('');
-  const [selectedTemplates, setSelectedTemplates] = useState<BlogTemplate[]>(
+  const [selectedBlocks, setSelectedBlocks] = useState<BlogBlock[]>(
     []
   );
 
@@ -21,11 +21,11 @@ export default function Home() {
     const { active, over } = event;
 
     if (over && over.id === 'editor-dropzone') {
-      const draggedTemplateId = active.id.toString().replace('template-', '');
-      const template = templates.find((t) => t.id === draggedTemplateId);
+      const draggedBlockId = active.id.toString().replace('block-', '');
+      const block = blocks.find((t) => t.id === draggedBlockId);
 
-      if (template && !selectedTemplates.find((t) => t.id === template.id)) {
-        setSelectedTemplates((prev) => [...prev, template]);
+      if (block && !selectedBlocks.find((t) => t.id === block.id)) {
+        setSelectedBlocks((prev) => [...prev, block]);
       }
     }
   };
@@ -34,16 +34,16 @@ export default function Home() {
     <Layout>
       <DndContext onDragEnd={handleDragEnd}>
         <div className="flex h-screen bg-background">
-          <TemplateSidebar
-            selectedTemplate={selectedTemplate}
-            onTemplateSelect={setSelectedTemplate}
+          <BlockSidebar
+            selectedBlock={selectedBlock}
+            onBlockSelect={setSelectedBlock}
             className="w-80 border-r"
           />
           <Editor
             url={url}
             content={content}
-            selectedTemplates={selectedTemplates}
-            setSelectedTemplates={setSelectedTemplates}
+            selectedBlocks={selectedBlocks}
+            setSelectedBlocks={setSelectedBlocks}
             onUrlChange={setUrl}
             onContentChange={setContent}
             className="flex-1"

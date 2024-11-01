@@ -3,8 +3,8 @@
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { BlogTemplate } from '@/types/blog';
-import { Loader2, Send, GripVertical } from 'lucide-react';
+import { BlogBlock } from '@/types/blog';
+import { Loader2Icon, SendIcon, GripVerticalIcon } from 'lucide-react';
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useDroppable } from '@dnd-kit/core';
@@ -13,20 +13,19 @@ import {
   useSortable,
   verticalListSortingStrategy,
   arrayMove,
-  horizontalListSortingStrategy,
 } from '@dnd-kit/sortable';
 
 interface EditorProps {
   className?: string;
   url: string;
   content: string;
-  selectedTemplates: BlogTemplate[];
-  setSelectedTemplates: (templates: BlogTemplate[]) => void;
+  selectedBlocks: BlogBlock[];
+  setSelectedBlocks: (blocks: BlogBlock[]) => void;
   onUrlChange: (url: string) => void;
   onContentChange: (content: string) => void;
 }
 
-function TemplateItem({ template }: { template: BlogTemplate }) {
+function BlockItem({ block }: { block: BlogBlock }) {
   const {
     attributes,
     listeners,
@@ -35,7 +34,7 @@ function TemplateItem({ template }: { template: BlogTemplate }) {
     transition,
     isDragging,
   } = useSortable({
-    id: template.id,
+    id: block.id,
   });
 
   const style = {
@@ -52,14 +51,14 @@ function TemplateItem({ template }: { template: BlogTemplate }) {
       style={style}
       className={cn(
         'flex items-center gap-2 p-3 bg-white border rounded-lg shadow-sm z-50',
-        template.color
+        block.color
       )}
       {...attributes}
       {...listeners}
     >
-      <GripVertical className="h-4 w-4 text-gray-400" />
-      <template.icon className="h-4 w-4" />
-      <span>{template.name}</span>
+      <GripVerticalIcon className="h-4 w-4 text-gray-400" />
+      <block.icon className="h-4 w-4" />
+      <span>{block.name}</span>
     </div>
   );
 }
@@ -68,8 +67,8 @@ export function Editor({
   className,
   url,
   content,
-  selectedTemplates,
-  setSelectedTemplates,
+  selectedBlocks,
+  setSelectedBlocks,
   onUrlChange,
   onContentChange,
 }: EditorProps) {
@@ -89,10 +88,10 @@ export function Editor({
       return;
     }
 
-    if (selectedTemplates.length === 0) {
+    if (selectedBlocks.length === 0) {
       toast({
-        title: 'Templates required',
-        description: 'Please select at least one template',
+        title: 'Blocks required',
+        description: 'Please select at least one block',
         variant: 'destructive',
       });
       return;
@@ -110,7 +109,7 @@ export function Editor({
       <div className="max-w-2xl mx-auto space-y-4">
         <h1 className="text-3xl font-bold tracking-tight">AI Blog Generator</h1>
         <p className="text-muted-foreground">
-          Enter a URL or keywords, then drag templates to organize your article
+          Enter a URL or keywords, then drag blocks to organize your article
           structure
         </p>
 
@@ -126,18 +125,18 @@ export function Editor({
           className="min-h-[200px] p-4 border-2 border-dashed rounded-lg bg-gray-50"
         >
           <SortableContext
-            items={selectedTemplates}
+            items={selectedBlocks}
             strategy={verticalListSortingStrategy}
           >
             <div className="space-y-2">
-              {selectedTemplates.map((template) => (
-                <TemplateItem key={template.id} template={template} />
+              {selectedBlocks.map((block) => (
+                <BlockItem key={block.id} block={block} />
               ))}
             </div>
           </SortableContext>
-          {selectedTemplates.length === 0 && (
+          {selectedBlocks.length === 0 && (
             <p className="text-center text-gray-500 py-8">
-              Drag templates here to organize your article structure
+              Drag blocks here to organize your article structure
             </p>
           )}
         </div>
@@ -149,12 +148,12 @@ export function Editor({
         >
           {isGenerating ? (
             <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
               Generating...
             </>
           ) : (
             <>
-              <Send className="mr-2 h-4 w-4" />
+              <SendIcon className="mr-2 h-4 w-4" />
               Generate Content
             </>
           )}

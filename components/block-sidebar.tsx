@@ -3,26 +3,26 @@
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { BlogTemplate, templates } from '@/types/blog';
-import { LayoutTemplate } from 'lucide-react';
+import { BlogBlock, blocks } from '@/types/blog';
+import { LayoutTemplateIcon } from 'lucide-react';
 import { useDraggable } from '@dnd-kit/core';
 
-interface TemplateSidebarProps {
+interface BlockSidebarProps {
   className?: string;
-  selectedTemplate: BlogTemplate | null;
-  onTemplateSelect: (template: BlogTemplate) => void;
+  selectedBlock: BlogBlock | null;
+  onBlockSelect: (block: BlogBlock) => void;
 }
 
-function DraggableTemplateButton({
-  template,
+function DraggableBlockButton({
+  block,
   isSelected,
 }: {
-  template: BlogTemplate;
+  block: BlogBlock;
   isSelected: boolean;
 }) {
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
-    id: `template-${template.id}`,
-    data: { template },
+    id: `block-${block.id}`,
+    data: { block },
   });
 
   const style = transform
@@ -37,39 +37,39 @@ function DraggableTemplateButton({
       variant={isSelected ? 'secondary' : 'ghost'}
       className={cn(
         'w-full z-50 justify-start cursor-move',
-        template.color,
+        block.color,
         isSelected && 'bg-secondary'
       )}
       style={style}
       {...attributes}
       {...listeners}
     >
-      <template.icon className="mr-2 h-4 w-4" />
-      {template.name}
+      <block.icon className="mr-2 h-4 w-4" />
+      {block.name}
     </Button>
   );
 }
 
-export function TemplateSidebar({
+export function BlockSidebar({
   className,
-  selectedTemplate,
-  onTemplateSelect,
-}: TemplateSidebarProps) {
+  selectedBlock,
+  onBlockSelect,
+}: BlockSidebarProps) {
   return (
     <div className={cn('flex flex-col overflow-hidden', className)}>
       <div className="px-4 py-3 border-b">
         <h2 className="flex items-center text-lg font-semibold">
-          <LayoutTemplate className="mr-2 h-5 w-5" />
-          Templates
+          <LayoutTemplateIcon className="mr-2 h-5 w-5" />
+          Blocks
         </h2>
       </div>
       <ScrollArea className="flex-1 p-4">
         <div className="space-y-2">
-          {templates.map((template) => (
-            <DraggableTemplateButton
-              key={template.id}
-              template={template}
-              isSelected={selectedTemplate?.id === template.id}
+          {blocks.map((block) => (
+            <DraggableBlockButton
+              key={block.id}
+              block={block}
+              isSelected={selectedBlock?.id === block.id}
             />
           ))}
         </div>
