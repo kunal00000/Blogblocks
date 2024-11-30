@@ -70,7 +70,7 @@ function BlockItem({
     >
       <div
         ref={setNodeRef}
-        className="flex items-center gap-2 cursor-move"
+        className="flex items-center drag-item gap-2"
         {...attributes}
         {...listeners}
       >

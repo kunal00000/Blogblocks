@@ -49,7 +49,7 @@ function DraggableBlockButton({
     >
       <div
         ref={setNodeRef}
-        className="flex items-center gap-2 cursor-move"
+        className="flex items-center gap-2 drag-item"
         {...attributes}
         {...listeners}
       >
@@ -62,7 +62,7 @@ function DraggableBlockButton({
 
 export function DragOverlayContent({ block }: { block: BlogBlock }) {
   return (
-    <div className="w-[200px] p-3 bg-white border-2 rounded-lg shadow-lg">
+    <div className="w-[200px] p-3 bg-white border-2 drag-item-active rounded-lg shadow-lg">
       <div className="flex items-center gap-2">
         <block.icon className="h-4 w-4" />
         <span>{block.name}</span>

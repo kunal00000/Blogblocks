@@ -80,3 +80,11 @@
     @apply bg-background text-foreground;
   }
 }
+
+.drag-item {
+  cursor: grab;
+}
+
+.drag-item-active {
+  cursor: grabbing;
+}
