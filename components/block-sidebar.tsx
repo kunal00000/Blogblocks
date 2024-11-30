@@ -35,7 +35,6 @@ function DraggableBlockButton({
       variant={isSelected ? "secondary" : "ghost"}
       className={cn(
         "w-full justify-start",
-        block.color,
         isSelected && "bg-secondary",
         isDragging && "opacity-50"
       )}

@@ -65,7 +65,6 @@ function BlockItem({
       style={style}
       className={cn(
         "flex items-center gap-2 p-3 group bg-white border rounded-lg shadow-sm",
-        block.color,
         isDragging && "shadow-lg"
       )}
     >
