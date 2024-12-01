@@ -85,6 +85,20 @@ const config: Config = {
       },
     },
   },
+  safelist: [
+    {
+      pattern: /bg-(sky|fuchsia|amber)-300\/10/,
+    },
+    {
+      pattern: /bg-(sky|fuchsia|amber)-50/,
+    },
+    {
+      pattern: /text-(sky|fuchsia|amber)-600/,
+    },
+    {
+      pattern: /border-(sky|fuchsia|amber)-100/,
+    },
+  ],
   plugins: [require('tailwindcss-animate')],
 };
 export default config;

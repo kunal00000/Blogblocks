@@ -93,7 +93,7 @@ export default function Home() {
           setSelectedBlocks={setSelectedBlocks}
           onUrlChange={setUrl}
           onContentChange={setContent}
-          className="flex-1"
+          className="flex-1 bg-gray-400/10"
         />
       </div>
 

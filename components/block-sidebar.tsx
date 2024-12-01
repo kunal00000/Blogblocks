@@ -33,8 +33,11 @@ function DraggableBlockButton({
   return (
     <Button
       variant={isSelected ? "secondary" : "ghost"}
+      ref={setNodeRef}
+      {...attributes}
+      {...listeners}
       className={cn(
-        "w-full justify-start",
+        "w-full justify-start drag-item border-2", `bg-${block.color}-300/10 text-${block.color}-600 border-${block.color}-100`,
         isSelected && "bg-secondary",
         isDragging && "opacity-50"
       )}
@@ -47,12 +50,7 @@ function DraggableBlockButton({
         });
       }}
     >
-      <div
-        ref={setNodeRef}
-        className="flex items-center gap-2 drag-item"
-        {...attributes}
-        {...listeners}
-      >
+      <div className="flex items-center gap-2">
         <block.icon className="mr-2 h-4 w-4" />
         {block.name}
       </div>
@@ -62,7 +60,7 @@ function DraggableBlockButton({
 
 export function DragOverlayContent({ block }: { block: TBlogBlock }) {
   return (
-    <div className="w-[200px] p-3 bg-white border-2 drag-item-active rounded-lg shadow-lg">
+    <div className={`w-[200px] p-3 border-2 drag-item-active rounded-lg shadow-lg bg-${block.color}-50 text-${block.color}-600`}>
       <div className="flex items-center gap-2">
         <block.icon className="h-4 w-4" />
         <span>{block.name}</span>
@@ -85,7 +83,7 @@ export function BlockSidebar({
         <h2 className="flex items-center text-lg font-semibold">
           <LayoutTemplateIcon className="mr-2 h-5 w-5" />
           Blocks
-        </h2>
+        </h2> 
       </div>
       <ScrollArea className="flex-1 p-4">
         <div className="space-y-2">

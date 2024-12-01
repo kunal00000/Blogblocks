@@ -101,10 +101,10 @@ export function Editor({
         <div
           ref={setNodeRef}
           className={cn(
-            'min-h-[200px] p-4 border-2 border-dashed rounded-lg transition-colors',
+            'min-h-[200px] p-4 border-2 border-dashed bg-background rounded-lg transition-colors',
             isOver
               ? 'border-primary bg-primary/10'
-              : 'border-gray-200 bg-gray-50',
+              : 'border-gray-200',
             selectedBlocks.length > 0 && 'pb-20'
           )}
         >

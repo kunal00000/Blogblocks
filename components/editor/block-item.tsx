@@ -40,7 +40,7 @@ export function BlockItem({ block, onRemove }: BlockItemProps) {
     <div
       style={style}
       className={cn(
-        'flex items-center gap-2 p-3 group bg-white border rounded-lg shadow-sm',
+        `flex items-center gap-2 p-3 group border rounded-lg shadow-sm bg-${block.color}-50 text-${block.color}-600 border-${block.color}-100`,
         isDragging && 'shadow-lg'
       )}
     >
