@@ -3,7 +3,7 @@
 import { useCallback, useMemo, useState } from "react";
 import { Editor } from "@/components/editor";
 import { BlockSidebar, DragOverlayContent } from "@/components/block-sidebar";
-import { BlogBlock, blocks } from "@/types/blog";
+import { TBlogBlock, blocks } from "@/types/blog";
 import {
   DndContext,
   DragEndEvent,
@@ -17,11 +17,11 @@ import { MEASURING_CONFIG } from "@/lib/helpers";
 
 export default function Home() {
   // State management with TypeScript
-  const [selectedBlock, setSelectedBlock] = useState<BlogBlock | null>(null);
+  const [selectedBlock, setSelectedBlock] = useState<TBlogBlock | null>(null);
   const [content, setContent] = useState("");
   const [url, setUrl] = useState("");
-  const [selectedBlocks, setSelectedBlocks] = useState<BlogBlock[]>([]);
-  const [draggedBlock, setDraggedBlock] = useState<BlogBlock | null>(null);
+  const [selectedBlocks, setSelectedBlocks] = useState<TBlogBlock[]>([]);
+  const [draggedBlock, setDraggedBlock] = useState<TBlogBlock | null>(null);
 
   // Memoized drag modifiers
   const modifiers = useMemo(() => [restrictToWindowEdges], []);

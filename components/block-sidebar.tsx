@@ -3,7 +3,7 @@
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { BlogBlock, blocks } from "@/types/blog";
+import {TBlogBlock, blocks } from "@/types/blog";
 import { LayoutTemplateIcon } from "lucide-react";
 import { DragOverlay, useDraggable } from "@dnd-kit/core";
 import { useState } from "react";
@@ -11,9 +11,9 @@ import { createPortal } from "react-dom";
 
 interface BlockSidebarProps {
   className?: string;
-  selectedBlock: BlogBlock | null;
-  onBlockSelect: (block: BlogBlock) => void;
-  setSelectedBlocks: React.Dispatch<React.SetStateAction<BlogBlock[]>>;
+  selectedBlock: TBlogBlock | null;
+  onBlockSelect: (block: TBlogBlock) => void;
+  setSelectedBlocks: React.Dispatch<React.SetStateAction<TBlogBlock[]>>;
 }
 
 function DraggableBlockButton({
@@ -21,9 +21,9 @@ function DraggableBlockButton({
   isSelected,
   setSelectedBlocks,
 }: {
-  block: BlogBlock;
+  block: TBlogBlock;
   isSelected: boolean;
-  setSelectedBlocks: React.Dispatch<React.SetStateAction<BlogBlock[]>>;
+  setSelectedBlocks: React.Dispatch<React.SetStateAction<TBlogBlock[]>>;
 }) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: `block-${block.id}`,
@@ -60,7 +60,7 @@ function DraggableBlockButton({
   );
 }
 
-export function DragOverlayContent({ block }: { block: BlogBlock }) {
+export function DragOverlayContent({ block }: { block: TBlogBlock }) {
   return (
     <div className="w-[200px] p-3 bg-white border-2 drag-item-active rounded-lg shadow-lg">
       <div className="flex items-center gap-2">
@@ -77,7 +77,7 @@ export function BlockSidebar({
   onBlockSelect,
   setSelectedBlocks,
 }: BlockSidebarProps) {
-  const [draggedBlock, setDraggedBlock] = useState<BlogBlock | null>(null);
+  const [draggedBlock, setDraggedBlock] = useState<TBlogBlock | null>(null);
 
   return (
     <div className={cn("flex flex-col w-full", className)}>

@@ -1,92 +1,30 @@
-"use client";
+'use client';
 
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { BlogBlock } from "@/types/blog";
-import {
-  Loader2Icon,
-  SendIcon,
-  GripVerticalIcon,
-  Trash2Icon,
-} from "lucide-react";
-import { useCallback, useMemo, useState } from "react";
-import { useToast } from "@/hooks/use-toast";
-import { useDroppable } from "@dnd-kit/core";
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { TBlogBlock } from '@/types/blog';
+import { useCompletion, experimental_useObject as useObject } from 'ai/react';
+import { Loader2Icon, SendIcon } from 'lucide-react';
+import { useCallback, useState } from 'react';
+import { useToast } from '@/hooks/use-toast';
+import { useDroppable } from '@dnd-kit/core';
 import {
   SortableContext,
-  useSortable,
   verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
-import { animateLayoutChanges } from "@/lib/helpers";
+} from '@dnd-kit/sortable';
+import { BlockItem } from './editor/block-item';
+import { ContentDisplay } from './editor/content-display';
+import { contentBlockSchema } from '@/app/api/generate-content/schema';
 
 interface EditorProps {
   className?: string;
   url: string;
   content: string;
-  selectedBlocks: BlogBlock[];
-  setSelectedBlocks: React.Dispatch<React.SetStateAction<BlogBlock[]>>;
+  selectedBlocks: TBlogBlock[];
+  setSelectedBlocks: React.Dispatch<React.SetStateAction<TBlogBlock[]>>;
   onUrlChange: (url: string) => void;
   onContentChange: (content: string) => void;
-}
-
-function BlockItem({
-  block,
-  onRemove,
-}: {
-  block: BlogBlock;
-  onRemove: (id: string) => void;
-}) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({
-    id: block.id,
-    animateLayoutChanges,
-  });
-
-  const style = useMemo(
-    () => ({
-      transform: CSS.Translate.toString(transform),
-      transition,
-      opacity: isDragging ? 0.5 : 1,
-      zIndex: isDragging ? 999 : 1,
-    }),
-    [isDragging, transform, transition]
-  );
-
-  return (
-    <div
-      style={style}
-      className={cn(
-        "flex items-center gap-2 p-3 group bg-white border rounded-lg shadow-sm",
-        isDragging && "shadow-lg"
-      )}
-    >
-      <div
-        ref={setNodeRef}
-        className="flex items-center drag-item gap-2"
-        {...attributes}
-        {...listeners}
-      >
-        <GripVerticalIcon className="h-4 w-4 text-gray-400" />
-        <block.icon className="h-4 w-4" />
-        <span>{block.name}</span>
-      </div>
-
-      <span
-        onClick={() => onRemove(block.id)}
-        className="p-1.5 ml-auto rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-500 hover:bg-red-500/10"
-      >
-        <Trash2Icon className="h-5 w-5 text-red-500 cursor-pointer" />
-      </span>
-    </div>
-  );
 }
 
 export function Editor({
@@ -101,37 +39,51 @@ export function Editor({
   const [isGenerating, setIsGenerating] = useState(false);
   const { toast } = useToast();
   const { setNodeRef, isOver } = useDroppable({
-    id: "editor-dropzone",
+    id: 'editor-dropzone',
+  });
+
+  const { object, submit } = useObject({
+    api: '/api/generate-content',
+    schema: contentBlockSchema,
+    onFinish: () => {
+      setIsGenerating(false);
+    },
+    onError: (error) => {
+      setIsGenerating(false);
+      toast({
+        title: 'Error',
+        description: error.message,
+        variant: 'destructive',
+      });
+    },
   });
 
   const handleGenerate = useCallback(async () => {
     if (!url) {
       toast({
-        title: "Input required",
-        description: "Please provide a URL or keywords",
-        variant: "destructive",
+        title: 'Input required',
+        description: 'Please provide a URL or keywords',
+        variant: 'destructive',
       });
       return;
     }
 
     if (selectedBlocks.length === 0) {
       toast({
-        title: "Blocks required",
-        description: "Please select at least one block",
-        variant: "destructive",
+        title: 'Blocks required',
+        description: 'Please select at least one block',
+        variant: 'destructive',
       });
       return;
     }
 
     setIsGenerating(true);
-    // TODO: Implement AI generation
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    onContentChange("Generated content will appear here...");
-    setIsGenerating(false);
-  }, [onContentChange, selectedBlocks.length, toast, url]);
+    submit({ keywords: url, selectedBlocks });
+    onContentChange('Generating content...');
+  }, [onContentChange, selectedBlocks, submit, toast, url]);
 
   return (
-    <div className={cn("p-6 space-y-6 overflow-y-scroll pb-12", className)}>
+    <div className={cn('p-6 space-y-6 overflow-y-scroll pb-12', className)}>
       <div className="max-w-2xl mx-auto space-y-4">
         <h1 className="text-3xl font-bold tracking-tight">AI Blog Generator</h1>
         <p className="text-muted-foreground">
@@ -149,11 +101,11 @@ export function Editor({
         <div
           ref={setNodeRef}
           className={cn(
-            "min-h-[200px] p-4 border-2 border-dashed rounded-lg transition-colors",
+            'min-h-[200px] p-4 border-2 border-dashed rounded-lg transition-colors',
             isOver
-              ? "border-primary bg-primary/10"
-              : "border-gray-200 bg-gray-50",
-            selectedBlocks.length > 0 && "pb-20"
+              ? 'border-primary bg-primary/10'
+              : 'border-gray-200 bg-gray-50',
+            selectedBlocks.length > 0 && 'pb-20'
           )}
         >
           <SortableContext
@@ -166,8 +118,8 @@ export function Editor({
                   key={block.id}
                   block={block}
                   onRemove={(blockId: string) => {
-                    setSelectedBlocks((prev: BlogBlock[]) =>
-                      prev.filter((block: BlogBlock) => block.id !== blockId)
+                    setSelectedBlocks((prev: TBlogBlock[]) =>
+                      prev.filter((block: TBlogBlock) => block.id !== blockId)
                     );
                   }}
                 />
@@ -198,6 +150,13 @@ export function Editor({
             </>
           )}
         </Button>
+
+        {object?.contentBlocks?.map((cb, index) => (
+          <div key={index}>
+            <p>{cb?.blockName}</p>
+            <ContentDisplay content={cb?.content as string} />
+          </div>
+        ))}
       </div>
     </div>
   );
