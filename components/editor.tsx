@@ -42,6 +42,8 @@ export function Editor({
     id: "editor-dropzone",
   });
 
+  const [objectBlocks, setObjectBlocks] = useState<TBlogBlock[]>([]);
+
   const { object, submit } = useObject({
     api: "/api/generate-content",
     schema: contentBlockSchema,
@@ -78,6 +80,7 @@ export function Editor({
     }
 
     setIsGenerating(true);
+    setObjectBlocks(selectedBlocks);
     submit({ keywords: url, selectedBlocks });
     onContentChange("Generating content...");
   }, [onContentChange, selectedBlocks, submit, toast, url]);
@@ -159,7 +162,7 @@ export function Editor({
                   {cb?.blockName}
                 </p>
                 <div
-                  className={`bg-${selectedBlocks[index].color}-50 p-3 rounded-lg text-${selectedBlocks[index].color}-600`}
+                  className={cn(`p-3 rounded-lg`, objectBlocks.length > index ? `bg-${objectBlocks[index].color}-50 text-${objectBlocks[index].color}-600` : "bg-gray-50 text-gray-600")}
                 >
                   <ContentDisplay content={cb?.content as string} />
                 </div>
