@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { TBlogBlock } from "@/types/blog";
-import { useCompletion, experimental_useObject as useObject } from "ai/react";
+import { experimental_useObject as useObject } from "ai/react";
 import { Loader2Icon, SendIcon } from "lucide-react";
 import { useCallback, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
@@ -88,12 +88,12 @@ export function Editor({
   return (
     <div className={cn("p-6 space-y-6 overflow-y-scroll pb-12", className)}>
       <div className="max-w-2xl mx-auto space-y-4">
-        <h1 className="text-3xl font-bold tracking-tight">AI Blog Generator</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Blog Blocks</h1>
         <p className="text-muted-foreground">
-          Enter some keywords, then drag blocks to organize your article
-          structure
+          Blog Blocks is an AI tool that helps organize your blog content. Enter
+          keywords and arrange predefined blocks to create a structured layout
+          for your article.
         </p>
-
         <Input
           placeholder="Enter article keywords..."
           value={url}
@@ -155,14 +155,17 @@ export function Editor({
         {object && (
           <div className="bg-background p-3 space-y-4 rounded-xl border border-border">
             {object?.contentBlocks?.map((cb, index) => (
-              <div
-                key={index}
-              >
+              <div key={index}>
                 <p className="text-gray-300 italic font-semibold text-base">
                   {cb?.blockName}
                 </p>
                 <div
-                  className={cn(`p-3 rounded-lg`, objectBlocks.length > index ? `bg-${objectBlocks[index].color}-50 text-${objectBlocks[index].color}-600` : "bg-gray-50 text-gray-600")}
+                  className={cn(
+                    `p-3 rounded-lg`,
+                    objectBlocks.length > index
+                      ? `bg-${objectBlocks[index].color}-50 text-${objectBlocks[index].color}-600`
+                      : "bg-gray-50 text-gray-600"
+                  )}
                 >
                   <ContentDisplay content={cb?.content as string} />
                 </div>
