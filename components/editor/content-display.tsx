@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useEffect, useRef } from 'react';
-import { marked } from 'marked';
+import { useEffect, useRef } from "react";
+import { marked } from "marked";
 
 interface ContentDisplayProps {
   content: string;
@@ -12,13 +12,18 @@ export function ContentDisplay({ content, className }: ContentDisplayProps) {
   const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (contentRef.current) {
-      if(!content) {
-        contentRef.current.innerHTML = '';
-        return;
+    const parseContent = async () => {
+      const parsedContent = await marked(content);
+      if (contentRef.current) {
+        contentRef.current.innerHTML = parsedContent;
       }
-      contentRef.current.innerHTML = marked(content);
+    };
+
+    if (!content && contentRef.current) {
+      contentRef.current.innerHTML = "";
+      return;
     }
+    parseContent();
   }, [content]);
 
   return (
