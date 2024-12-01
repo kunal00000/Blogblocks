@@ -5,6 +5,7 @@ import { streamObject } from 'ai';
 import { contentBlockSchema } from './schema';
 
 export const dynamic = 'force-dynamic';
+export const runtime = 'edge';
 
 export async function POST(request: NextRequest) {
   try {
