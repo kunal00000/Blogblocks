@@ -1,21 +1,21 @@
-'use client';
+"use client";
 
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { TBlogBlock } from '@/types/blog';
-import { useCompletion, experimental_useObject as useObject } from 'ai/react';
-import { Loader2Icon, SendIcon } from 'lucide-react';
-import { useCallback, useState } from 'react';
-import { useToast } from '@/hooks/use-toast';
-import { useDroppable } from '@dnd-kit/core';
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { TBlogBlock } from "@/types/blog";
+import { useCompletion, experimental_useObject as useObject } from "ai/react";
+import { Loader2Icon, SendIcon } from "lucide-react";
+import { useCallback, useState } from "react";
+import { useToast } from "@/hooks/use-toast";
+import { useDroppable } from "@dnd-kit/core";
 import {
   SortableContext,
   verticalListSortingStrategy,
-} from '@dnd-kit/sortable';
-import { BlockItem } from './editor/block-item';
-import { ContentDisplay } from './editor/content-display';
-import { contentBlockSchema } from '@/app/api/generate-content/schema';
+} from "@dnd-kit/sortable";
+import { BlockItem } from "./editor/block-item";
+import { ContentDisplay } from "./editor/content-display";
+import { contentBlockSchema } from "@/app/api/generate-content/schema";
 
 interface EditorProps {
   className?: string;
@@ -39,11 +39,11 @@ export function Editor({
   const [isGenerating, setIsGenerating] = useState(false);
   const { toast } = useToast();
   const { setNodeRef, isOver } = useDroppable({
-    id: 'editor-dropzone',
+    id: "editor-dropzone",
   });
 
   const { object, submit } = useObject({
-    api: '/api/generate-content',
+    api: "/api/generate-content",
     schema: contentBlockSchema,
     onFinish: () => {
       setIsGenerating(false);
@@ -51,9 +51,9 @@ export function Editor({
     onError: (error) => {
       setIsGenerating(false);
       toast({
-        title: 'Error',
+        title: "Error",
         description: error.message,
-        variant: 'destructive',
+        variant: "destructive",
       });
     },
   });
@@ -61,38 +61,38 @@ export function Editor({
   const handleGenerate = useCallback(async () => {
     if (!url) {
       toast({
-        title: 'Input required',
-        description: 'Please provide a URL or keywords',
-        variant: 'destructive',
+        title: "Input required",
+        description: "Please provide some keywords",
+        variant: "destructive",
       });
       return;
     }
 
     if (selectedBlocks.length === 0) {
       toast({
-        title: 'Blocks required',
-        description: 'Please select at least one block',
-        variant: 'destructive',
+        title: "Blocks required",
+        description: "Please select at least one block",
+        variant: "destructive",
       });
       return;
     }
 
     setIsGenerating(true);
     submit({ keywords: url, selectedBlocks });
-    onContentChange('Generating content...');
+    onContentChange("Generating content...");
   }, [onContentChange, selectedBlocks, submit, toast, url]);
 
   return (
-    <div className={cn('p-6 space-y-6 overflow-y-scroll pb-12', className)}>
+    <div className={cn("p-6 space-y-6 overflow-y-scroll pb-12", className)}>
       <div className="max-w-2xl mx-auto space-y-4">
         <h1 className="text-3xl font-bold tracking-tight">AI Blog Generator</h1>
         <p className="text-muted-foreground">
-          Enter a URL or keywords, then drag blocks to organize your article
+          Enter some keywords, then drag blocks to organize your article
           structure
         </p>
 
         <Input
-          placeholder="Enter article URL or keywords..."
+          placeholder="Enter article keywords..."
           value={url}
           onChange={(e) => onUrlChange(e.target.value)}
           disabled={isGenerating}
@@ -101,11 +101,9 @@ export function Editor({
         <div
           ref={setNodeRef}
           className={cn(
-            'min-h-[200px] p-4 border-2 border-dashed bg-background rounded-lg transition-colors',
-            isOver
-              ? 'border-primary bg-primary/10'
-              : 'border-gray-200',
-            selectedBlocks.length > 0 && 'pb-20'
+            "min-h-[200px] p-4 border-2 border-dashed bg-background rounded-lg transition-colors",
+            isOver ? "border-primary bg-primary/10" : "border-gray-200",
+            selectedBlocks.length > 0 && "pb-20"
           )}
         >
           <SortableContext
@@ -151,12 +149,24 @@ export function Editor({
           )}
         </Button>
 
-        {object?.contentBlocks?.map((cb, index) => (
-          <div key={index}>
-            <p>{cb?.blockName}</p>
-            <ContentDisplay content={cb?.content as string} />
+        {object && (
+          <div className="bg-background p-3 space-y-4 rounded-xl border border-border">
+            {object?.contentBlocks?.map((cb, index) => (
+              <div
+                key={index}
+              >
+                <p className="text-gray-300 italic font-semibold text-base">
+                  {cb?.blockName}
+                </p>
+                <div
+                  className={`bg-${selectedBlocks[index].color}-50 p-3 rounded-lg text-${selectedBlocks[index].color}-600`}
+                >
+                  <ContentDisplay content={cb?.content as string} />
+                </div>
+              </div>
+            ))}
           </div>
-        ))}
+        )}
       </div>
     </div>
   );
