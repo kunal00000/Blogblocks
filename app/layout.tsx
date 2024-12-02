@@ -11,6 +11,9 @@ export const metadata: Metadata = {
   description: 'Use Blog Blocks to structure your blog content with ease. Input keywords and arrange predefined blocks to create a well-organized article layout.',
   keywords: ['Blog Blocks', 'AI blog generator', 'blog structure', 'content creation tool', 'organize blogs', 'blogging tool'],
   authors: [{ name: 'Kunal Verma' }],
+  icons: {
+    icon: '/favicon.ico',
+  },
   openGraph: {
     title: 'Blog Blocks - AI Tool for Organizing Blog Content',
     description: 'Easily structure your blogs using Blog Blocks. Drag and drop blocks to create the perfect layout.',
