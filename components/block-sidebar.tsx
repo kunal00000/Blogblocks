@@ -4,8 +4,8 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { TBlogBlock, blocks } from "@/types/blog";
-import { LayoutTemplateIcon, Plus, X } from "lucide-react";
-import { DragOverlay, useDraggable } from "@dnd-kit/core";
+import { LayoutTemplateIcon, X } from "lucide-react";
+import { DragOverlay } from "@dnd-kit/core";
 import { useState } from "react";
 import { createPortal } from "react-dom";
 import { useMediaQuery } from "@/hooks/use-media-query";
@@ -17,6 +17,7 @@ interface BlockSidebarProps {
   selectedBlock: TBlogBlock | null;
   onBlockSelect: (block: TBlogBlock) => void;
   setSelectedBlocks: React.Dispatch<React.SetStateAction<TBlogBlock[]>>;
+  selectedBlocks: TBlogBlock[];
   onClose?: () => void;
 }
 
@@ -25,6 +26,7 @@ export function BlockSidebar({
   selectedBlock,
   onBlockSelect,
   setSelectedBlocks,
+  selectedBlocks,
   onClose,
 }: BlockSidebarProps) {
   const [draggedBlock, setDraggedBlock] = useState<TBlogBlock | null>(null);
@@ -37,7 +39,7 @@ export function BlockSidebar({
           <LayoutTemplateIcon className="mr-2 h-5 w-5" />
           Blocks
         </h2>
-        {onClose && isMobile && (
+        {onClose && (
           <Button variant="ghost" size="icon" onClick={onClose} className="h-8 w-8">
             <X className="h-4 w-4" />
           </Button>
@@ -50,6 +52,7 @@ export function BlockSidebar({
               key={block.id}
               block={block}
               isSelected={selectedBlock?.id === block.id}
+              isAdded={selectedBlocks.some(b => b.id === block.id)}
               setSelectedBlocks={setSelectedBlocks}
               isMobile={isMobile}
             />

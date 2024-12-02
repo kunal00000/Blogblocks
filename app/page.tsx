@@ -101,6 +101,7 @@ export default function Home() {
             onBlockSelect={setSelectedBlock}
             setSelectedBlocks={setSelectedBlocks}
             onClose={() => setIsSidebarOpen(false)}
+            selectedBlocks={selectedBlocks}
           />
         </div>
 
