@@ -3,70 +3,21 @@
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import {TBlogBlock, blocks } from "@/types/blog";
-import { LayoutTemplateIcon } from "lucide-react";
+import { TBlogBlock, blocks } from "@/types/blog";
+import { LayoutTemplateIcon, Plus, X } from "lucide-react";
 import { DragOverlay, useDraggable } from "@dnd-kit/core";
 import { useState } from "react";
 import { createPortal } from "react-dom";
+import { useMediaQuery } from "@/hooks/use-media-query";
+import { BlockButton } from "@/components/blocks/block-button";
+import { DragOverlayContent } from "@/components/blocks/drag-overlay-content";
 
 interface BlockSidebarProps {
   className?: string;
   selectedBlock: TBlogBlock | null;
   onBlockSelect: (block: TBlogBlock) => void;
   setSelectedBlocks: React.Dispatch<React.SetStateAction<TBlogBlock[]>>;
-}
-
-function DraggableBlockButton({
-  block,
-  isSelected,
-  setSelectedBlocks,
-}: {
-  block: TBlogBlock;
-  isSelected: boolean;
-  setSelectedBlocks: React.Dispatch<React.SetStateAction<TBlogBlock[]>>;
-}) {
-  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
-    id: `block-${block.id}`,
-    data: { block },
-  });
-
-  return (
-    <Button
-      variant={isSelected ? "secondary" : "ghost"}
-      ref={setNodeRef}
-      {...attributes}
-      {...listeners}
-      className={cn(
-        "w-full justify-start drag-item border-2", `bg-${block.color}-300/10 text-${block.color}-600 border-${block.color}-100`,
-        isSelected && "bg-secondary",
-        isDragging && "opacity-50"
-      )}
-      onClick={() => {
-        setSelectedBlocks((prev) => {
-          if (prev.some((b) => b.id === block.id)) {
-            return prev;
-          }
-          return [...prev, block];
-        });
-      }}
-    >
-      <div className="flex items-center gap-2">
-        <block.icon className="mr-2 h-4 w-4" />
-        {block.name}
-      </div>
-    </Button>
-  );
-}
-
-export function DragOverlayContent({ block }: { block: TBlogBlock }) {
-  return (
-    <div className={`w-[200px] p-3 border-2 drag-item-active rounded-lg shadow-lg bg-${block.color}-50 text-${block.color}-600`}>
-      <div className="flex items-center gap-2">
-        <block.icon className="h-4 w-4" />
-        <span>{block.name}</span>
-      </div>
-    </div>
-  );
+  onClose?: () => void;
 }
 
 export function BlockSidebar({
@@ -74,32 +25,40 @@ export function BlockSidebar({
   selectedBlock,
   onBlockSelect,
   setSelectedBlocks,
+  onClose,
 }: BlockSidebarProps) {
   const [draggedBlock, setDraggedBlock] = useState<TBlogBlock | null>(null);
+  const isMobile = useMediaQuery("(max-width: 768px)");
 
   return (
-    <div className={cn("flex flex-col w-full", className)}>
-      <div className="px-4 py-3 border-b">
-        <h2 className="flex items-center text-lg font-semibold">
+    <div className={cn("flex flex-col w-full h-full", className)}>
+      <div className="px-4 py-3 border-b flex justify-between items-center bg-background sticky top-0 z-10">
+        <h2 className="flex items-center text-lg font-semibold tracking-tight">
           <LayoutTemplateIcon className="mr-2 h-5 w-5" />
           Blocks
-        </h2> 
+        </h2>
+        {onClose && isMobile && (
+          <Button variant="ghost" size="icon" onClick={onClose} className="h-8 w-8">
+            <X className="h-4 w-4" />
+          </Button>
+        )}
       </div>
       <ScrollArea className="flex-1 p-4">
-        <div className="space-y-2">
+        <div className="grid gap-2">
           {blocks.map((block) => (
-            <DraggableBlockButton
+            <BlockButton
               key={block.id}
               block={block}
               isSelected={selectedBlock?.id === block.id}
               setSelectedBlocks={setSelectedBlocks}
+              isMobile={isMobile}
             />
           ))}
         </div>
       </ScrollArea>
       {typeof document !== "undefined" &&
         createPortal(
-          <DragOverlay>
+          <DragOverlay dropAnimation={null}>
             {draggedBlock && <DragOverlayContent block={draggedBlock} />}
           </DragOverlay>,
           document.body

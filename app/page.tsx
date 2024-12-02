@@ -2,7 +2,7 @@
 
 import { useCallback, useMemo, useState } from "react";
 import { Editor } from "@/components/editor";
-import { BlockSidebar, DragOverlayContent } from "@/components/block-sidebar";
+import { BlockSidebar } from "@/components/block-sidebar";
 import { TBlogBlock, blocks } from "@/types/blog";
 import {
   DndContext,
@@ -14,19 +14,20 @@ import { arrayMove } from "@dnd-kit/sortable";
 import { createPortal } from "react-dom";
 import { restrictToWindowEdges } from "@dnd-kit/modifiers";
 import { MEASURING_CONFIG } from "@/lib/helpers";
+import { Button } from "@/components/ui/button";
+import { Menu } from "lucide-react";
+import { DragOverlayContent } from "@/components/blocks/drag-overlay-content";
 
 export default function Home() {
-  // State management with TypeScript
   const [selectedBlock, setSelectedBlock] = useState<TBlogBlock | null>(null);
   const [content, setContent] = useState("");
   const [url, setUrl] = useState("");
   const [selectedBlocks, setSelectedBlocks] = useState<TBlogBlock[]>([]);
   const [draggedBlock, setDraggedBlock] = useState<TBlogBlock | null>(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  // Memoized drag modifiers
   const modifiers = useMemo(() => [restrictToWindowEdges], []);
 
-  // Optimized handlers with useCallback
   const handleDragStart = useCallback((event: DragStartEvent) => {
     const { active } = event;
     const blockId = active.id.toString().replace("block-", "");
@@ -42,7 +43,6 @@ export default function Home() {
 
     if (!over) return;
 
-    // Handle dropping into editor zone
     if (over.id === "editor-dropzone") {
       const draggedBlockId = active.id.toString().replace("block-", "");
       const block = blocks.find((b) => b.id === draggedBlockId);
@@ -56,7 +56,6 @@ export default function Home() {
       return;
     }
 
-    // Handle reordering
     if (active.id !== over.id) {
       setSelectedBlocks((items) => {
         const activeIndex = items.findIndex(
@@ -79,13 +78,33 @@ export default function Home() {
       modifiers={modifiers}
       measuring={MEASURING_CONFIG}
     >
-      <div className="flex h-screen bg-background">
-        <BlockSidebar
-          selectedBlock={selectedBlock}
-          onBlockSelect={setSelectedBlock}
-          setSelectedBlocks={setSelectedBlocks}
-          className="w-80 border-r"
-        />
+      <div className="flex flex-col md:flex-row h-screen bg-background">
+        {/* Mobile Menu Button */}
+        <div className="md:hidden p-4 border-b">
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+          >
+            <Menu className="h-4 w-4" />
+          </Button>
+        </div>
+
+        {/* Sidebar */}
+        <div
+          className={`${
+            isSidebarOpen ? "block" : "hidden"
+          } md:block md:w-80 border-r h-[calc(100vh-65px)] md:h-screen`}
+        >
+          <BlockSidebar
+            selectedBlock={selectedBlock}
+            onBlockSelect={setSelectedBlock}
+            setSelectedBlocks={setSelectedBlocks}
+            onClose={() => setIsSidebarOpen(false)}
+          />
+        </div>
+
+        {/* Editor */}
         <Editor
           url={url}
           content={content}
@@ -93,11 +112,10 @@ export default function Home() {
           setSelectedBlocks={setSelectedBlocks}
           onUrlChange={setUrl}
           onContentChange={setContent}
-          className="flex-1 bg-gray-400/10"
+          className="flex-1 bg-gray-400/10 h-[calc(100vh-65px)] md:h-screen overflow-y-auto"
         />
       </div>
 
-      {/* Drag Overlay Portal */}
       {typeof document !== "undefined" &&
         createPortal(
           <DragOverlay dropAnimation={null}>

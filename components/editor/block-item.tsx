@@ -1,12 +1,14 @@
-'use client';
+"use client";
 
-import { cn } from '@/lib/utils';
-import { TBlogBlock } from '@/types/blog';
-import { GripVerticalIcon, Trash2Icon } from 'lucide-react';
-import { useMemo } from 'react';
-import { useSortable } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
-import { animateLayoutChanges } from '@/lib/helpers';
+import { cn } from "@/lib/utils";
+import { TBlogBlock } from "@/types/blog";
+import { GripVerticalIcon, Trash2Icon } from "lucide-react";
+import { useMemo } from "react";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import { animateLayoutChanges } from "@/lib/helpers";
+import { useMediaQuery } from "@/hooks/use-media-query";
+import { Button } from "@/components/ui/button";
 
 interface BlockItemProps {
   block: TBlogBlock;
@@ -14,17 +16,14 @@ interface BlockItemProps {
 }
 
 export function BlockItem({ block, onRemove }: BlockItemProps) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({
-    id: block.id,
-    animateLayoutChanges,
-  });
+  const isMobile = useMediaQuery("(max-width: 768px)"); 
+
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
+    useSortable({
+      id: block.id,
+      animateLayoutChanges,
+      disabled: isMobile,
+    });
 
   const style = useMemo(
     () => ({
@@ -38,29 +37,30 @@ export function BlockItem({ block, onRemove }: BlockItemProps) {
 
   return (
     <div
+      ref={setNodeRef}
       style={style}
       className={cn(
-        `flex items-center gap-2 p-3 group border rounded-lg shadow-sm bg-${block.color}-50 text-${block.color}-600 border-${block.color}-100`,
-        isDragging && 'shadow-lg'
+        "flex items-center gap-2 p-3 group border rounded-lg shadow-sm",
+        `bg-${block.color}-50 text-${block.color}-600 border-${block.color}-100`,
+        isDragging && "shadow-lg",
+        "transition-all duration-200"
       )}
+      {...(!isMobile ? { ...attributes, ...listeners } : {})}
     >
-      <div
-        ref={setNodeRef}
-        className="flex items-center drag-item gap-2"
-        {...attributes}
-        {...listeners}
-      >
-        <GripVerticalIcon className="h-4 w-4 text-gray-400" />
-        <block.icon className="h-4 w-4" />
-        <span>{block.name}</span>
+      <div className="flex items-center gap-2 flex-1 min-w-0">
+        {!isMobile && <GripVerticalIcon className="h-4 w-4 text-gray-400 shrink-0" />}
+        <block.icon className="h-4 w-4 shrink-0" />
+        <span className="truncate">{block.name}</span>
       </div>
 
-      <span
+      <Button
+        variant="ghost"
+        size="icon"
         onClick={() => onRemove(block.id)}
-        className="p-1.5 ml-auto rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-500 hover:bg-red-500/10"
+        className="h-8 w-8 opacity-70 hover:opacity-100 hover:bg-red-500/10 transition-all duration-200"
       >
-        <Trash2Icon className="h-5 w-5 text-red-500 cursor-pointer" />
-      </span>
+        <Trash2Icon className="h-4 w-4 text-red-500" />
+      </Button>
     </div>
   );
 }

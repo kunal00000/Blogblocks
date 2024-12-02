@@ -91,11 +91,11 @@ export function Editor({
         <h1 className="text-3xl font-bold tracking-tight">Blog Blocks</h1>
         <p className="text-muted-foreground">
           Blog Blocks is an AI tool that helps organize your blog content. Enter
-          keywords and arrange predefined blocks to create a structured layout
+          title or keywords and arrange predefined blocks to create a structured layout
           for your article.
         </p>
         <Input
-          placeholder="Enter article keywords..."
+          placeholder="Enter article title or keywords..."
           value={url}
           onChange={(e) => onUrlChange(e.target.value)}
           disabled={isGenerating}
