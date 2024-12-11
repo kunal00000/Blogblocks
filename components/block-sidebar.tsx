@@ -39,7 +39,7 @@ export function BlockSidebar({
           <LayoutTemplateIcon className="mr-2 h-5 w-5" />
           Blocks
         </h2>
-        {onClose && (
+        {onClose && isMobile && (
           <Button variant="ghost" size="icon" onClick={onClose} className="h-8 w-8">
             <X className="h-4 w-4" />
           </Button>
