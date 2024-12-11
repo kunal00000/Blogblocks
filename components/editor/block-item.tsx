@@ -53,7 +53,7 @@ export function BlockItem({ block, onRemove }: BlockItemProps) {
       <div
         style={style}
         ref={setNodeRef}
-        className="flex items-center py-3 pl-3 grow bg-red-100 gap-2 flex-1 min-w-0"
+        className="flex items-center py-3 pl-3 grow gap-2 flex-1 min-w-0"
         {...(!isMobile ? { ...attributes, ...listeners } : {})}
         >
         {!isMobile && (
