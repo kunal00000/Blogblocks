@@ -46,7 +46,7 @@ export function BlockButton({
 
   const buttonClassNames = cn(
     "w-full justify-start border-2",
-    `bg-${block.color}-300/10 text-${block.color}-600 border-${block.color}-100`,
+    `bg-${block.color}-300/10 text-${block.color}-600 border-${block.color}-100 dark:border-${block.color}-900`,
     isSelected && "bg-secondary",
     isDragging && "opacity-50",
     !isMobile && !isAdded && "drag-item",

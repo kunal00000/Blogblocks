@@ -11,6 +11,7 @@ import { createPortal } from "react-dom";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { BlockButton } from "@/components/blocks/block-button";
 import { DragOverlayContent } from "@/components/blocks/drag-overlay-content";
+import { DarkModeToggle } from "./ui/dark-mode-toggle";
 
 interface BlockSidebarProps {
   className?: string;
@@ -39,6 +40,7 @@ export function BlockSidebar({
           <LayoutTemplateIcon className="mr-2 h-5 w-5" />
           Blocks
         </h2>
+        <DarkModeToggle />
         {onClose && isMobile && (
           <Button variant="ghost" size="icon" onClick={onClose} className="h-8 w-8">
             <X className="h-4 w-4" />
