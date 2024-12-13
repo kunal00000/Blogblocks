@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { TBlogBlock } from "@/types/blog";
 import { experimental_useObject as useObject } from "ai/react";
-import { Loader2Icon, SendIcon } from "lucide-react";
+import { Loader2Icon, SendIcon, Link2Icon } from "lucide-react";
 import { useCallback, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useDroppable } from "@dnd-kit/core";
@@ -16,24 +16,29 @@ import {
 import { BlockItem } from "./editor/block-item";
 import { ContentDisplay } from "./editor/content-display";
 import { contentBlockSchema } from "@/app/api/generate-content/schema";
+import { MultiInput } from "./ui/multi-input";
 
 interface EditorProps {
   className?: string;
-  url: string;
+  keywords: string;
+  internalLinks: string[];
   content: string;
   selectedBlocks: TBlogBlock[];
   setSelectedBlocks: React.Dispatch<React.SetStateAction<TBlogBlock[]>>;
-  onUrlChange: (url: string) => void;
+  onKeywordsChange: (keywords: string) => void;
+  onInternalLinksChange: (links: string[]) => void;
   onContentChange: (content: string) => void;
 }
 
 export function Editor({
   className,
-  url,
+  keywords,
+  internalLinks,
   content,
   selectedBlocks,
   setSelectedBlocks,
-  onUrlChange,
+  onKeywordsChange,
+  onInternalLinksChange,
   onContentChange,
 }: EditorProps) {
   const [isGenerating, setIsGenerating] = useState(false);
@@ -61,7 +66,7 @@ export function Editor({
   });
 
   const handleGenerate = useCallback(async () => {
-    if (!url) {
+    if (!keywords) {
       toast({
         title: "Input required",
         description: "Please provide some keywords",
@@ -81,9 +86,9 @@ export function Editor({
 
     setIsGenerating(true);
     setObjectBlocks(selectedBlocks);
-    submit({ keywords: url, selectedBlocks });
+    submit({ keywords, selectedBlocks, internalLinks });
     onContentChange("Generating content...");
-  }, [onContentChange, selectedBlocks, submit, toast, url]);
+  }, [onContentChange, selectedBlocks, submit, toast, keywords, internalLinks]);
 
   return (
     <div className={cn("p-6 space-y-6 overflow-y-scroll pb-12", className)}>
@@ -94,12 +99,28 @@ export function Editor({
           title or keywords and arrange predefined blocks to create a structured layout
           for your article.
         </p>
-        <Input
-          placeholder="Enter article title or keywords..."
-          value={url}
-          onChange={(e) => onUrlChange(e.target.value)}
-          disabled={isGenerating}
-        />
+        
+        <div className="space-y-4">
+          <Input
+            placeholder="Enter article title or keywords..."
+            value={keywords}
+            onChange={(e) => onKeywordsChange(e.target.value)}
+            disabled={isGenerating}
+          />
+
+          <div className="space-y-2">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Link2Icon className="h-4 w-4" />
+              <span>Internal Links</span>
+            </div>
+            <MultiInput
+              value={internalLinks}
+              onChange={onInternalLinksChange}
+              placeholder="Add internal link URL..."
+              disabled={isGenerating}
+            />
+          </div>
+        </div>
 
         <div
           ref={setNodeRef}

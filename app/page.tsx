@@ -21,7 +21,8 @@ import { DragOverlayContent } from "@/components/blocks/drag-overlay-content";
 export default function Home() {
   const [selectedBlock, setSelectedBlock] = useState<TBlogBlock | null>(null);
   const [content, setContent] = useState("");
-  const [url, setUrl] = useState("");
+  const [keywords, setKeywords] = useState("");
+  const [internalLinks, setInternalLinks] = useState<string[]>([]);
   const [selectedBlocks, setSelectedBlocks] = useState<TBlogBlock[]>([]);
   const [draggedBlock, setDraggedBlock] = useState<TBlogBlock | null>(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -107,11 +108,13 @@ export default function Home() {
 
         {/* Editor */}
         <Editor
-          url={url}
+          keywords={keywords}
+          internalLinks={internalLinks}
           content={content}
           selectedBlocks={selectedBlocks}
           setSelectedBlocks={setSelectedBlocks}
-          onUrlChange={setUrl}
+          onKeywordsChange={setKeywords}
+          onInternalLinksChange={setInternalLinks}
           onContentChange={setContent}
           className="flex-1 bg-gray-400/10 h-[calc(100vh-65px)] md:h-screen overflow-y-auto"
         />

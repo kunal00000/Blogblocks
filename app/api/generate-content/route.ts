@@ -9,7 +9,7 @@ export const runtime = 'edge';
 
 export async function POST(request: NextRequest) {
   try {
-    const { keywords, selectedBlocks } = await request.json();
+    const { keywords, selectedBlocks, internalLinks } = await request.json();
 
     if (!keywords || !selectedBlocks || selectedBlocks.length === 0) {
       return new Response(
@@ -23,10 +23,16 @@ export async function POST(request: NextRequest) {
       .map((block: TBlogBlock) => `[${block.name}]: ${block.prompt}`)
       .join('\n');
 
+    // Construct internal links guidance
+    const linksGuidance = internalLinks && internalLinks.length > 0
+      ? `\nInternal Links to Include:\n${internalLinks.map((link: string) => `- ${link}`).join('\n')}`
+      : '';
+
     const prompt = `
       You are an expert blog writer. Create a comprehensive, engaging blog post.
 
       Keywords: ${keywords}
+      ${linksGuidance}
 
       Blog Structure Guidelines:
       ${blockGuidance}
@@ -40,6 +46,7 @@ export async function POST(request: NextRequest) {
       - Use markdown for formatting
       - Include clear headings for each section
       - Make sure to separate sections with newlines
+      ${internalLinks.length > 0 ? '- Naturally incorporate the provided internal links where relevant' : ''}
 
       Write the blog post now:
     `;
