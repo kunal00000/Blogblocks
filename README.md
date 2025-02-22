@@ -16,7 +16,7 @@ Blog Blocks is an AI-powered tool designed to help users organize their blog con
 Ensure you have the following installed:
 
 - Node.js (version 16 or later)
-- npm or yarn
+- bun or pnpm or npm
 
 ## Usage
 
